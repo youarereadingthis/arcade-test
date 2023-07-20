@@ -48,14 +48,17 @@ public partial class SceneScreen : Entity
 		{
 			Position = Position,
 			Rotation = Rotation,
-			WorldScale = 512
+			WorldScale = 1
 		};
-		ScenePanel = WorldPanel.Add.ScenePanel( Game.SceneWorld, Position, Rotation, 90 );
+
+		var camRot = Rotation.RotateAroundAxis(Vector3.Up, 180f);
+		ScenePanel = WorldPanel.Add.ScenePanel( Game.SceneWorld, Position, camRot, 90 );
+
+		// WorldPanel.Add.Image( "ui/black.png" );
+
 		Cam = ScenePanel.Camera;
-		Cam.Size = 512;
 		Cam.AmbientLightColor = Color.White;
 		Cam.BackgroundColor = Color.Black;
-		Cam.World = Game.SceneWorld;
 	}
 
 	public void SetSize( int width, int height )

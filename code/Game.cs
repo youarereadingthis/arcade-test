@@ -25,19 +25,25 @@ public partial class Arcade : GameManager
 
 	public override void Spawn()
 	{
-		Log.Info("Spawn()");
+		Log.Info( "Spawn()" );
 		base.Spawn();
 	}
 
 	public override void ClientSpawn()
 	{
-		Log.Info("ClientSpawn()");
+		Log.Info( "ClientSpawn()" );
 		base.ClientSpawn();
 
-		Game.RootPanel = new Hud(); 
-		_ = new SceneScreen();
+		Game.RootPanel = new Hud();
 	}
 
+	private SceneScreen screen;
+	[GameEvent.Tick.Client]
+	public void SpawnScreen()
+	{
+		if ( !screen.IsValid() )
+			screen = new SceneScreen();
+	}
 
 	public override void ClientJoined( IClient client )
 	{
