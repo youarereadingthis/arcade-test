@@ -1,0 +1,161 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using System;
+
+@namespace Sandbox
+@inherits RootPanel
+@attribute [StyleSheet]
+
+<root>
+    <image @ref=Image></image>
+</root>
+
+@code
+{
+    public Image Image { get; set; }
+    public SceneScreen Screen { get; set; }
+    public ScenePanelObject SceneObject { get; set; }
+
+    public float Size { get; set; } = 1024;
+    public float MaxInteractionDistance { get; set; } = 1000.0f;
+
+
+
+    public ScreenImage(SceneScreen scrn)
+    {
+        Screen = scrn;
+
+        var sz = Size / 2;
+        PanelBounds = new Rect(-sz, -sz, Size, Size);
+        Scale = 1.0f;
+
+        // Don't render this panel using the panel system
+        RenderedManually = true;
+    }
+
+
+    [GameEvent.Client.Frame]
+    public void Frame()
+    {
+        if (Image == null || Screen == null)
+            return;
+
+        Image.Texture = Screen.GetRenderTexture();
+        Graphics.RenderToTexture(Screen.Cam, Image.Texture);
+
+        @* Log.Info("ScreenImage.Frame()"); *@
+    }
+
+
+    /// <summary>
+    /// Transform of the world panel in 3D space.
+    /// </summary>
+    public Transform Transform
+    {
+        get => SceneObject.Transform;
+        set => SceneObject.Transform = value;
+    }
+
+    /// <summary>
+    /// Position of the world panel in 3D space.
+    /// </summary>
+    public Vector3 Position
+    {
+        get => Transform.Position;
+        set => Transform = Transform.WithPosition(value);
+    }
+
+    /// <summary>
+    /// Rotation of the world panel in 3D space.
+    /// </summary>
+    public Rotation Rotation
+    {
+        get => Transform.Rotation;
+        set => Transform = Transform.WithRotation(value);
+    }
+
+    /// <summary>
+    /// Scale of the world panel in 3D space.
+    /// </summary>
+    public float WorldScale
+    {
+        get => Transform.Scale;
+        set => Transform = Transform.WithScale(value);
+    }
+
+
+    /// <summary>
+    /// We override this to prevent the scale automatically being set based on screen
+    /// size changing.. because that's obviously not needed here.
+    /// </summary>
+    protected override void UpdateScale(Rect screenSize)
+    {
+        
+    }
+
+
+    /// <summary>
+    /// Update the bounds for this panel. We purposely do nothing here because
+    /// on world panels you can change the bounds by setting <see cref="RootPanel.PanelBounds"/>.
+    /// </summary>
+    protected override void UpdateBounds(Rect rect)
+    {
+        var right = Rotation.Right;
+        var down = Rotation.Down;
+
+        var panelBounds = PanelBounds * ScenePanelObject.ScreenToWorldScale;
+
+        //
+        // Work out the bounds by adding each corner to a bbox
+        //
+        var bounds = new BBox(right * panelBounds.Left + down * panelBounds.Top);
+        bounds = bounds.AddPoint(right * panelBounds.Left + down * panelBounds.Bottom);
+        bounds = bounds.AddPoint(right * panelBounds.Right + down * panelBounds.Top);
+        bounds = bounds.AddPoint(right * panelBounds.Right + down * panelBounds.Bottom);
+
+        SceneObject.Bounds = bounds + Position;
+    }
+
+    public override void Delete(bool immediate = false)
+    {
+        base.Delete(immediate);
+    }
+
+    public override void OnDeleted()
+    {
+        base.OnDeleted();
+
+        SceneObject?.Delete();
+        SceneObject = null;
+    }
+
+    public override bool RayToLocalPosition(Ray ray, out Vector2 position, out float distance)
+    {
+        position = default;
+        distance = 0;
+
+        var plane = new Plane(Position, Rotation.Forward);
+        var pos = plane.Trace(ray, false, MaxInteractionDistance);
+
+        if (!pos.HasValue)
+            return false;
+
+        distance = Vector3.DistanceBetween(pos.Value, ray.Position);
+        if (distance < 1)
+            return false;
+
+        // to local coords
+        var localPos3 = Transform.PointToLocal(pos.Value);
+        var localPos = new Vector2(localPos3.y, -localPos3.z);
+
+        // convert to screen coords
+        localPos *= (1.0f / ScenePanelObject.ScreenToWorldScale / WorldScale);
+
+        if (!IsInside(localPos))
+            return false;
+
+        position = localPos;
+
+        return true;
+    }
+}

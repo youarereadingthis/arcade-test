@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
@@ -8,98 +9,83 @@ using Sandbox.UI.Construct;
 namespace Sandbox;
 
 
-[Category( "Scene Camera" )]
+[Category( "Scene" )]
 public partial class SceneScreen : Entity
 {
+
+	public SceneCamera Cam { get; set; }
+	public ScreenImage ScreenImage { get; set; }
+	public ScenePanelObject SceneObject { get; private set; }
+
 	public Texture RT { get; set; }
 	public VertexBuffer VB { get; set; }
 	public Material Material { get; set; } = Material.Load( "materials/tools/toolswhite.vmat" );
 
-	public SceneCamera Cam { get; set; }
-	public SceneRenderer Renderer { get; set; }
 
-	public WorldPanel WorldPanel { get; set; }
-	public ScenePanel ScenePanel { get; set; }
-
-
-	public SceneScreen()
+	public SceneScreen( SceneWorld world = null )
 	{
-		Position = Vector3.Up * 128f; // temp
+		ScreenImage = new ScreenImage( this );
+		SceneObject = new ScenePanelObject( world ?? Game.SceneWorld, ScreenImage );
+		SceneObject.Flags.IsOpaque = false;
+		SceneObject.Flags.IsTranslucent = true;
 
-		/*Cam = new()
+		ScreenImage.SceneObject = this.SceneObject;
+		ScreenImage.Position = this.Position;
+		ScreenImage.Rotation = this.Rotation;
+
+		Cam = new()
 		{
 			Position = this.Position,
 			Rotation = this.Rotation,
 			AmbientLightColor = Color.White,
 			BackgroundColor = Color.Black,
-			World = Game.SceneWorld
-		};*/
-
-		Renderer = new SceneRenderer( Game.SceneWorld, this )
-		{
-			Position = this.Position,
-			Rotation = this.Rotation,
-			RenderingEnabled = true
+			World = Game.SceneWorld,
+			FieldOfView = Camera.Main.FieldOfView,
+			ZFar = ScreenImage.MaxInteractionDistance
 		};
 
-		SetSize( 512, 512 );
-
-		WorldPanel = new WorldPanel( Game.SceneWorld )
-		{
-			Position = Position,
-			Rotation = Rotation,
-			WorldScale = 1
-		};
-
-		var camRot = Rotation.RotateAroundAxis( Vector3.Right, 90f );
-		// ScenePanel = WorldPanel.Add.ScenePanel( Game.SceneWorld, Vector3.Zero, camRot, 90 );
-		ScenePanel = new ScenePanel() { World = Game.SceneWorld, };
-		WorldPanel.AddChild( ScenePanel );
-
-		Cam = ScenePanel.Camera;
-		Cam.Position = Position;
-		Cam.Rotation = camRot;
-		Cam.FieldOfView = 90;
-		Cam.AmbientLightColor = Color.White;
-		Cam.BackgroundColor = Color.Black;
-
-		// So that I know where the WorldPanel is.
-		WorldPanel.Add.Image( "ui/black_transparent.png" );
-		// ScenePanel.Add.Image( "ui/black_transparent.png" ); // crashes
+		Refresh();
 	}
 
-	public void SetSize( int width, int height )
+
+	public Texture GetRenderTexture()
 	{
+		if ( RT == null ) Init();
+		return RT;
+	}
+
+
+	[GameEvent.Screen.SizeChanged]
+	public void Refresh()
+	{
+		Init();
+	}
+
+	public void Init( int width = 0, int height = 0 )
+	{
+		var defRes = 128;
+		if ( width <= 0 ) width = defRes;//(int)Screen.Width;
+		if ( height <= 0 ) height = defRes;//(int)Screen.Height;
+
 		RT = Texture.CreateRenderTarget()
 			.WithFormat( ImageFormat.Default )
 			.WithScreenFormat()
-			.WithScreenMultiSample()
+			// .WithScreenMultiSample()
 			.WithSize( width, height )
 			.Create();
 
-		VB = new();
-		VB.Init( true );
-		VB.AddCube( Vector3.Zero, 256, Rotation.Identity, Color.White );
+		Log.Info( $"Created RT ({width}x{height})" );
 	}
 
-	public void RenderScreen()
-	{
-		var o = Renderer;
-		Log.Info( o );
-
-		Graphics.RenderToTexture( Cam, RT );
-
-		o.Attributes.Set( "Texture", RT );
-
-		VB.Draw( Material, o.Attributes );
-	}
 
 	[GameEvent.Tick.Client]
 	public void Tick()
 	{
-
+		Cam.Position = Camera.Main.Position;
+		Cam.Rotation = Camera.Main.Rotation;
+		ScreenImage.Position = this.Position;
+		ScreenImage.Rotation = this.Rotation;
 	}
-
 
 	public override void Simulate( IClient cl )
 	{

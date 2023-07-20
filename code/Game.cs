@@ -35,15 +35,9 @@ public partial class Arcade : GameManager
 		base.ClientSpawn();
 
 		Game.RootPanel = new Hud();
+		_ = new SceneScreen() { Position = Vector3.Up * 128f };
 	}
 
-	private SceneScreen screen;
-	[GameEvent.Tick.Client]
-	public void SpawnScreen()
-	{
-		if ( !screen.IsValid() )
-			screen = new SceneScreen();
-	}
 
 	public override void ClientJoined( IClient client )
 	{
