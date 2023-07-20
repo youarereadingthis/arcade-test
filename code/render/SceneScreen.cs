@@ -51,14 +51,21 @@ public partial class SceneScreen : Entity
 			WorldScale = 1
 		};
 
-		var camRot = Rotation.RotateAroundAxis(Vector3.Up, 180f);
-		ScenePanel = WorldPanel.Add.ScenePanel( Game.SceneWorld, Position, camRot, 90 );
+		var camRot = Rotation.RotateAroundAxis( Vector3.Right, 90f );
+		// ScenePanel = WorldPanel.Add.ScenePanel( Game.SceneWorld, Vector3.Zero, camRot, 90 );
+		ScenePanel = new ScenePanel() { World = Game.SceneWorld, };
+		WorldPanel.AddChild( ScenePanel );
 
 		Cam = ScenePanel.Camera;
+		Cam.Position = Position;
+		Cam.Rotation = camRot;
+		Cam.FieldOfView = 90;
 		Cam.AmbientLightColor = Color.White;
 		Cam.BackgroundColor = Color.Black;
 
+		// So that I know where the WorldPanel is.
 		WorldPanel.Add.Image( "ui/black_transparent.png" );
+		// ScenePanel.Add.Image( "ui/black_transparent.png" ); // crashes
 	}
 
 	public void SetSize( int width, int height )
