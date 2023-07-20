@@ -25,11 +25,13 @@ public partial class Arcade : GameManager
 
 	public override void Spawn()
 	{
+		Log.Info("Spawn()");
 		base.Spawn();
 	}
 
 	public override void ClientSpawn()
 	{
+		Log.Info("ClientSpawn()");
 		base.ClientSpawn();
 
 		Game.RootPanel = new Hud(); 
@@ -45,6 +47,6 @@ public partial class Arcade : GameManager
 		var pawn = new Pawn();
 		client.Pawn = pawn;
 
-		pawn.Position = Vector3.Up * 512f; // temp
+		pawn.Position = Vector3.Up * 128f; // temp
 	}
 }
