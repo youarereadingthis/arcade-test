@@ -1,0 +1,30 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using System;
+
+@namespace Sandbox
+@inherits RootPanel
+@attribute [StyleSheet]
+
+<root>
+    <ChatBox/>
+    <VoiceList/>
+
+    <div class="header">
+        <label>ay</label>
+        <label class="subtitle"></label>
+    </div>
+</root>
+
+@code
+{
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+    }
+
+    public override void Tick()
+    {
+        var devCam = Game.LocalClient.Components.Get<DevCamera>();
+        SetClass( "camera-movement", devCam is not null );
+    }
+}
