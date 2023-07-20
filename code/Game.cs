@@ -45,6 +45,6 @@ public partial class Arcade : GameManager
 		var pawn = new Pawn();
 		client.Pawn = pawn;
 
-		pawn.Position = Vector3.Zero;
+		pawn.Position = Vector3.Up * 512f; // temp
 	}
 }

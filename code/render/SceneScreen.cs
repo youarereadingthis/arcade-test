@@ -20,7 +20,7 @@ public partial class SceneScreen : Entity
 
 	public SceneScreen()
 	{
-		Position = Vector3.Up * 1024f; // temp
+		Position = Vector3.Up * 512f; // temp
 
 		Cam = new()
 		{
