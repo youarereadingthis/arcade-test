@@ -16,17 +16,18 @@
     public SceneScreen Screen { get; set; }
     public ScenePanelObject SceneObject { get; set; }
 
-    public float Size { get; set; } = 1024;
+    public float Width { get; set; } = 512;
+    public float Height { get; set; } = 512;
     public float MaxInteractionDistance { get; set; } = 1000.0f;
 
 
-
-    public ScreenImage(SceneScreen scrn)
+    public ScreenImage(SceneScreen scrn, int width, int height)
     {
         Screen = scrn;
 
-        var sz = Size / 2;
-        PanelBounds = new Rect(-sz, -sz, Size, Size);
+        Width = width;
+        Height = height;
+        PanelBounds = new Rect(-(width / 2), -(height / 2), width, height);
         Scale = 1.0f;
 
         // Don't render this panel using the panel system
@@ -37,7 +38,7 @@
     [GameEvent.Client.Frame]
     public void Frame()
     {
-        if (Image == null || Screen == null)
+        if (!Image.IsValid() || !Screen.IsValid())
             return;
 
         Image.Texture = Screen.GetRenderTexture();
@@ -90,7 +91,6 @@
     /// </summary>
     protected override void UpdateScale(Rect screenSize)
     {
-        
     }
 
 
@@ -105,28 +105,13 @@
 
         var panelBounds = PanelBounds * ScenePanelObject.ScreenToWorldScale;
 
-        //
         // Work out the bounds by adding each corner to a bbox
-        //
         var bounds = new BBox(right * panelBounds.Left + down * panelBounds.Top);
         bounds = bounds.AddPoint(right * panelBounds.Left + down * panelBounds.Bottom);
         bounds = bounds.AddPoint(right * panelBounds.Right + down * panelBounds.Top);
         bounds = bounds.AddPoint(right * panelBounds.Right + down * panelBounds.Bottom);
 
         SceneObject.Bounds = bounds + Position;
-    }
-
-    public override void Delete(bool immediate = false)
-    {
-        base.Delete(immediate);
-    }
-
-    public override void OnDeleted()
-    {
-        base.OnDeleted();
-
-        SceneObject?.Delete();
-        SceneObject = null;
     }
 
     public override bool RayToLocalPosition(Ray ray, out Vector2 position, out float distance)

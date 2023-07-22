@@ -5,9 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-//
-// You don't need to put things in a namespace, but it doesn't hurt.
-//
+
 namespace Sandbox;
 
 /// <summary>
@@ -19,6 +17,9 @@ namespace Sandbox;
 /// </summary>
 public partial class Arcade : GameManager
 {
+	public static SceneScreen Screen { get; set; }
+
+
 	public Arcade()
 	{
 	}
@@ -26,6 +27,7 @@ public partial class Arcade : GameManager
 	public override void Spawn()
 	{
 		Log.Info( "Spawn()" );
+
 		base.Spawn();
 	}
 
@@ -35,7 +37,7 @@ public partial class Arcade : GameManager
 		base.ClientSpawn();
 
 		Game.RootPanel = new Hud();
-		_ = new SceneScreen() { Position = Vector3.Up * 128f };
+		Screen = new SceneScreen( Game.SceneWorld, 256, 512, 512 ) { Position = Vector3.Up * 128f };
 	}
 
 
