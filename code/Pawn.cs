@@ -44,7 +44,7 @@ public partial class Pawn : AnimatedEntity
 
 	public Trace GetUseTrace()
 	{
-		return Trace.Ray( AimRay, 50f )
+		return Trace.Ray( AimRay, 70f )
 			.Ignore( this );
 	}
 
@@ -86,11 +86,11 @@ public partial class Pawn : AnimatedEntity
 
 		if ( Input.Down( "jump" ) )
 		{
-			Velocity += Rotation.Up * moveSpeed;
+			Velocity += Vector3.Up * moveSpeed;
 		}
 		else if ( Input.Down( "duck" ) )
 		{
-			Velocity += Rotation.Down * moveSpeed;
+			Velocity += Vector3.Down * moveSpeed;
 		}
 
 		Position += Velocity * Time.Delta;
@@ -105,26 +105,18 @@ public partial class Pawn : AnimatedEntity
 
 			// Depends on which number you press.
 			ArcadeMachine a = null;
+			var pos = tr.HitPosition;
 
 			if ( Input.Pressed( "slot1" ) )
-				a = SpawnMachine<ArcadeMachine>( tr.HitPosition );
+				a = new ArcadeMelon() { Position = pos }.Reorient( Rotation );
 			else if ( Input.Pressed( "slot2" ) )
-				a = SpawnMachine<ArcadeMelon>( tr.HitPosition );
+				a = new ArcadeDeadLines() { Position = pos }.Reorient( Rotation );
+
+			if ( a.IsValid() )
+				Log.Info( "Spawned a " + a.GetType().Name );
 		}
 	}
 
-	public T SpawnMachine<T>( Vector3 pos ) where T : ArcadeMachine
-	{
-		var a = new ArcadeMachine()
-		{
-			Position = pos,
-			Rotation = this.Rotation
-				.RotateAroundAxis( Vector3.Right, this.Rotation.Pitch() )
-				.RotateAroundAxis( Vector3.Up, 180f )
-		};
-
-		return a as T;
-	}
 
 	/// <summary>
 	/// Update the main camera.

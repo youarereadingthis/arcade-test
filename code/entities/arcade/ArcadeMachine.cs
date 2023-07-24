@@ -12,8 +12,8 @@ using Sandbox.UI.Construct;
 namespace Sandbox;
 
 
-[Category( "Arcade Machines" )]
-public partial class ArcadeMachine : ModelEntity, IUse
+[Category( "Arcade" )]
+public partial class ArcadeMachine : AnimatedEntity, IUse
 {
 	public virtual Model ArcadeModel { get; set; } = Cloud.Model( "shadb.arcade_cabinet" );
 
@@ -24,31 +24,25 @@ public partial class ArcadeMachine : ModelEntity, IUse
 	public SceneWorld SceneWorld { get; set; }
 	public PhysicsWorld PhysicsWorld { get; set; }
 
-	public ScenePanel ScenePanel { get; set; }
-
 	[Net]
 	public Pawn Pawn { get; set; } = null;
 
 
 	public override void Spawn()
 	{
-		base.Spawn();
-
 		Model = ArcadeModel;
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 	}
 
 	public override void ClientSpawn()
 	{
-		base.ClientSpawn();
-
 		SceneWorld = new()
 		{
 			AmbientLightColor = Color.White,
 			ClearColor = Color.White,
 		};
 
-		Screen = new( SceneWorld, 128, 610, 480 )
+		Screen = new( SceneWorld, 256, 610, 480 )
 		{
 			FollowMainCamera = false,
 			RequireCabinet = true,
@@ -56,19 +50,37 @@ public partial class ArcadeMachine : ModelEntity, IUse
 		};
 
 		Screen.Cam.Ortho = true;
-		Screen.Cam.OrthoWidth = 256;
-		Screen.Cam.OrthoHeight = 256;
+		Screen.Cam.OrthoWidth = 512;
+		Screen.Cam.OrthoHeight = 512;
 
 		UpdateScreen();
 	}
 
 
+	[GameEvent.Tick.Client]
+	public virtual void ClientTick()
+	{
+	}
+
 	public override void Simulate( IClient cl )
 	{
+		UpdateStick( Input.AnalogMove );
 	}
 
 	public override void FrameSimulate( IClient cl )
 	{
+	}
+
+
+	public void UpdateStick( Vector2 inputDir )
+	{
+		var fwd = inputDir.x;
+		var side = -inputDir.y;
+
+		SetAnimParameter( "up", fwd > 0.5f );
+		SetAnimParameter( "down", fwd < -0.5f );
+		SetAnimParameter( "left", side < -0.5f );
+		SetAnimParameter( "right", side > 0.5f );
 	}
 
 
@@ -163,6 +175,19 @@ public partial class ArcadeMachine : ModelEntity, IUse
 	public void ClientExit()
 	{
 		Screen?.ScreenImage?.Blur();
+	}
+
+
+	/// <summary>
+	/// Remove pitch and flip us around towards the viewer.
+	/// </summary>
+	public ArcadeMachine Reorient( Rotation rot )
+	{
+		Rotation = rot
+			.RotateAroundAxis( Vector3.Right, rot.Pitch() )
+			.RotateAroundAxis( Vector3.Up, 180f );
+
+		return this;
 	}
 
 

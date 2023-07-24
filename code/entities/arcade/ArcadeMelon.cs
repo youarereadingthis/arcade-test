@@ -3,7 +3,6 @@ using Sandbox.UI;
 namespace Sandbox;
 
 
-[Category( "Arcade Machines" )]
 public class ArcadeMelon : ArcadeMachine
 {
 	public SceneModel Melon { get; set; }
@@ -13,11 +12,13 @@ public class ArcadeMelon : ArcadeMachine
 	{
 		base.ClientSpawn();
 
-        // melon (helpful comment)
+		// melon (helpful comment)
 		Melon = new( SceneWorld, "models/sbox_props/watermelon/watermelon.vmdl", Transform.Zero )
 		{
 			Position = Vector3.Forward * 64f,
 		};
+
+		Log.Info( "melon" );
 	}
 
 
