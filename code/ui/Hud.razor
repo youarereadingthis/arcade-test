@@ -24,7 +24,11 @@
 
     public override void Tick()
     {
-        var devCam = Game.LocalClient.Components.Get<DevCamera>();
-        SetClass( "camera-movement", devCam is not null );
+        @* var devCam = Game.LocalClient.Components.Get<DevCamera>(); *@
+        @* SetClass( "camera-movement", devCam is not null ); *@
+
+        var showCursor = (Game.LocalPawn is Pawn p && p.ShowCursor());
+        SetClass("pointer-visible", showCursor);
+        @* Log.Info("showcursor: "+showCursor); *@
     }
 }

@@ -143,4 +143,34 @@
 
         return true;
     }
+
+    public bool RayToLocal(Ray ray, out Vector3 hitPos, out Vector2 scrPos, out bool onScreen)
+    {
+        hitPos = default;
+        scrPos = default;
+        onScreen = false;
+
+        var plane = new Plane(Position, Rotation.Forward);
+        var pos = plane.Trace(ray, false, MaxInteractionDistance);
+
+        if (!pos.HasValue)
+            return false;
+
+        var distance = Vector3.DistanceBetween(pos.Value, ray.Position);
+        if (distance < 1)
+            return false;
+
+        // to local coords
+        var localPos3 = Transform.PointToLocal(pos.Value);
+
+        var worldPos = new Vector3(localPos3.z, -localPos3.y, 0f);
+        worldPos *= (1.0f / ScenePanelObject.ScreenToWorldScale / WorldScale / 0.5f);
+        hitPos = worldPos;
+
+        scrPos = new Vector2(localPos3.y, -localPos3.z);
+        scrPos *= (1.0f / ScenePanelObject.ScreenToWorldScale / WorldScale);
+        onScreen = IsInside(scrPos);
+
+        return true;
+    }
 }

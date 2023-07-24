@@ -8,7 +8,7 @@ namespace Sandbox;
 public partial class Pawn : AnimatedEntity
 {
 	[Net]
-	public ArcadeMachine Arcade { get; set; }
+	public ArcadeMachine Machine { get; set; }
 
 	public Vector3 EyePos => Position;
 	public override Ray AimRay => new( EyePos, ViewAngles.Forward );
@@ -34,18 +34,28 @@ public partial class Pawn : AnimatedEntity
 	public override void BuildInput()
 	{
 		InputDirection = Input.AnalogMove;
-
 		var look = Input.AnalogLook;
 
-		var viewAngles = ViewAngles;
-		viewAngles += look;
-		ViewAngles = viewAngles.Normal;
-	}
+		// Look at the screen unless we're holding SHIFT.
 
-	public Trace GetUseTrace()
-	{
-		return Trace.Ray( AimRay, 70f )
-			.Ignore( this );
+		if ( !Machine.IsValid() || Input.Down( "run" ) )
+		{
+			// Free Look
+			var viewAngles = ViewAngles;
+			viewAngles += look;
+			ViewAngles = viewAngles.Normal;
+		}
+		else if ( Machine.IsValid() && Machine.Screen.IsValid() )
+		{
+			// Screen Look
+			var scrPos = Machine.Screen.Position;
+			var lookAt = Rotation.LookAt( (scrPos - AimRay.Position).Normal );
+			ViewAngles = Rotation.Slerp( ViewAngles.ToRotation(), lookAt, Time.Delta * 2f, true ).Angles();
+
+		}
+
+		// Pass inputs to the arcade machine for player controls.
+		Machine?.BuildInput();
 	}
 
 	/// <summary>
@@ -56,12 +66,12 @@ public partial class Pawn : AnimatedEntity
 		base.Simulate( cl );
 
 		// Arcade Machine Controller
-		if ( Arcade != null )
+		if ( Machine != null )
 		{
-			Arcade.Simulate( cl );
+			Machine.Simulate( cl );
 
 			if ( Game.IsServer && Input.Pressed( "score" ) )
-				Arcade.Exit();
+				Machine.Exit();
 
 			return;
 		}
@@ -117,6 +127,34 @@ public partial class Pawn : AnimatedEntity
 		}
 	}
 
+	// [GameEvent.Client.Frame]
+	public void DrawDebugBox()
+	{
+		// Debug cursor ray
+		var hitPos = Arcade.MouseWorldPos();
+		if ( hitPos.HasValue )
+		{
+			Vector3 v = hitPos.GetValueOrDefault();
+			// DebugOverlay.Box( v, -2, 2, Color.White, 0f, true );
+		}
+	}
+
+	public bool ShowCursor()
+	{
+		return Machine.IsValid() && !Input.Down( "run" );
+	}
+
+	public Ray ScreenRay()
+	{
+		return Mouse.Visible ? Camera.Main.GetRay( Mouse.Position ) : AimRay;
+	}
+
+	public Trace GetUseTrace()
+	{
+		return Trace.Ray( AimRay, 70f )
+			.Ignore( this );
+	}
+
 
 	/// <summary>
 	/// Update the main camera.
@@ -133,6 +171,6 @@ public partial class Pawn : AnimatedEntity
 		Camera.FirstPersonViewer = this;
 
 		// Pass FrameSimulate to the arcade machine.
-		Arcade?.FrameSimulate( cl );
+		Machine?.FrameSimulate( cl );
 	}
 }

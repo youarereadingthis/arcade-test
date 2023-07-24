@@ -3,6 +3,7 @@ using Sandbox.UI.Construct;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 
 
@@ -38,6 +39,35 @@ public partial class Arcade : GameManager
 
 		Game.RootPanel = new Hud();
 		Screen = new SceneScreen( Game.SceneWorld, 256, 512, 512 ) { Position = Vector3.Up * 128f };
+	}
+
+
+	public static Vector3? MouseWorldPos()
+	{
+		if ( Game.LocalPawn is not Pawn p )
+			return null;
+
+		var ray = p.ScreenRay();
+
+		// 
+		if ( p.Machine.IsValid() && p.Machine.Screen.IsValid() )
+		{
+			var scr = p.Machine.Screen;
+			var plane = new Plane( scr.Position, scr.Rotation.Forward );
+
+			var hit = plane.TryTrace( ray, out var hitPosition, twosided: true );
+			if ( !hit ) return null;
+
+			return hitPosition;
+		}
+		else
+		{
+			var tr = Trace.Ray( ray, 1024f )
+				.Ignore( p )
+				.Run();
+
+			return tr.HitPosition;
+		}
 	}
 
 

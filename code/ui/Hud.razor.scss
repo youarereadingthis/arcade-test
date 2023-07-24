@@ -1,11 +1,13 @@
 Hud {
     font-size: 25px;
-    pointer-events: none;
     color: white;
+
+    pointer-events: none;
     cursor: none;
 
-    .pointer-visible {
+    &.pointer-visible {
         pointer-events: all;
+        cursor: none;
     }
 
     &.camera-movement {

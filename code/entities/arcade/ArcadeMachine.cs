@@ -1,13 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security;
-using System.Threading.Tasks;
-using System.Transactions;
-using Microsoft.Win32;
-using Sandbox.UI;
-using Sandbox.UI.Construct;
 
 namespace Sandbox;
 
@@ -42,23 +32,26 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 			ClearColor = Color.White,
 		};
 
-		Screen = new( SceneWorld, 256, 610, 480 )
+		PhysicsWorld = new()
 		{
-			FollowMainCamera = false,
-			RequireCabinet = true,
-			Cabinet = this,
+			Gravity = Vector3.Zero,
 		};
+	}
 
-		Screen.Cam.Ortho = true;
-		Screen.Cam.OrthoWidth = 512;
-		Screen.Cam.OrthoHeight = 512;
+	public virtual void SetCursor(bool onScreen)
+	{
+		if (Game.RootPanel is not Hud hud) return;
 
-		UpdateScreen();
+		hud.Style.Cursor = onScreen ? "none" : "default";
 	}
 
 
 	[GameEvent.Tick.Client]
 	public virtual void ClientTick()
+	{
+	}
+
+	public override void BuildInput()
 	{
 	}
 
@@ -87,7 +80,7 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 	public bool IsUsable( Entity ent )
 	{
 		// Can't use a machine someone else is using.
-		if ( Pawn.IsValid() && Pawn.Arcade == this ) return false;
+		if ( Pawn.IsValid() && Pawn.Machine == this ) return false;
 
 		return ent.IsValid() && ent is Pawn;
 	}
@@ -115,14 +108,14 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 			return false;
 
 		// If somehow they try to control twice, kick them off the previous.
-		if ( p.Arcade.IsValid() )
+		if ( p.Machine.IsValid() )
 		{
-			if ( p.Arcade == this )
+			if ( p.Machine == this )
 				Log.Info( p + " tried to use the same machine twice." );
 			else
 				Log.Info( p + " tried to use multiple arcade machines!" );
 
-			p.Arcade.Exit();
+			p.Machine.Exit();
 
 			return false;
 		}
@@ -136,7 +129,7 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 
 		// The arcade machine is free to be controlled.
 		Pawn = p;
-		Pawn.Arcade = this;
+		Pawn.Machine = this;
 		ClientEnter( Pawn.Client );
 
 		Log.Info( p + " is entering " + this );
@@ -157,7 +150,7 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 			// Someone was using this machine.
 			Log.Info( "Kicking " + Pawn + " off of " + this );
 
-			Pawn.Arcade = null;
+			Pawn.Machine = null;
 			Pawn = null;
 		}
 
@@ -168,13 +161,17 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 	public void ClientEnter( IClient cl )
 	{
 		if ( !cl.IsValid() || cl != Game.LocalClient ) return;
-		Screen?.ScreenImage?.Focus();
+		Screen?.Img?.Focus();
+		if ( Screen.IsValid() && Screen.Img.IsValid() )
+		{
+			Log.Info( "Focusing screen " + Screen );
+		}
 	}
 
 	[ClientRpc]
 	public void ClientExit()
 	{
-		Screen?.ScreenImage?.Blur();
+		Screen?.Img?.Blur();
 	}
 
 

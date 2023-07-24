@@ -14,8 +14,8 @@ namespace Sandbox;
 public partial class SceneScreen : Entity
 {
 	public SceneCamera Cam { get; set; }
-	public ScreenImage ScreenImage { get; set; }
-	public ScenePanelObject SceneObject { get; private set; }
+	public ScreenImage Img { get; set; }
+	public ScenePanelObject Obj { get; private set; }
 
 	public Texture RT { get; set; }
 
@@ -49,12 +49,13 @@ public partial class SceneScreen : Entity
 	{
 		if ( Game.IsServer ) return;
 
-		ScreenImage = new ScreenImage( this, width, height );
-		SceneObject = new ScenePanelObject( Game.SceneWorld, ScreenImage );
-		SceneObject.Flags.IsOpaque = true;
-		SceneObject.Flags.IsTranslucent = true;
+		Img = new ScreenImage( this, width, height );
+		Obj = new ScenePanelObject( Game.SceneWorld, Img );
+		Obj.Flags.IsOpaque = true;
+		Obj.Flags.IsTranslucent = true;
 
-		ScreenImage.SceneObject = this.SceneObject;
+		Img.SceneObject = this.Obj;
+		// Img.Image.SetProperty( "image-rendering", "auto" );
 		UpdateScreen();
 
 		Cam = new()
@@ -119,9 +120,9 @@ public partial class SceneScreen : Entity
 
 	public void UpdateScreen()
 	{
-		if ( Game.IsServer || !SceneObject.IsValid() || !ScreenImage.IsValid() ) return;
-		ScreenImage.Position = this.Position;
-		ScreenImage.Rotation = this.Rotation;
+		if ( Game.IsServer || !Obj.IsValid() || !Img.IsValid() ) return;
+		Img.Position = this.Position;
+		Img.Rotation = this.Rotation;
 	}
 
 
