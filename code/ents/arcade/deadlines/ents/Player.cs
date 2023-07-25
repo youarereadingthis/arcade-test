@@ -14,14 +14,14 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		public AimLine Line { get; set; }
 		public PhysicsBody PhysBody { get; set; }
 
-		public float MoveSpeed { get; set; } = 100f;
+		public float MoveSpeed { get; set; } = 150f;
 
 
 
 		public Player( SceneWorld world, PhysicsWorld physWorld ) : base( world )
 		{
 			Shape = new Triangle();
-			Transform = Transform.WithScale( 7.5f );
+			Transform = Transform.WithScale( 7.0f );
 			PhysBody = new( physWorld );
 
 			ColorTint = Color.White;
@@ -42,6 +42,8 @@ public partial class ArcadeDeadLines : ArcadeMachine
 			{
 				Position += Vector3.Forward * moveDir.x * MoveSpeed * Time.Delta;
 				Position += Vector3.Right * -moveDir.y * MoveSpeed * Time.Delta;
+
+				Position = Position.Clamp( -ArenaSize, ArenaSize );
 			}
 
 			// DEBUG: Rotation

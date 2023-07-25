@@ -89,7 +89,7 @@ public partial class SceneScreen : Entity
 		RT = Texture.CreateRenderTarget()
 			.WithFormat( ImageFormat.Default )
 			.WithScreenFormat()
-			// .WithScreenMultiSample()
+			.WithScreenMultiSample()
 			.WithSize( width, height )
 			.Create();
 

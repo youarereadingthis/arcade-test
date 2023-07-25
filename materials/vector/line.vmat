@@ -8,9 +8,6 @@ Layer0
 	F_DO_NOT_CAST_SHADOWS 1
 	F_RENDER_BACKFACES 1
 
-	//---- Sprite ----
-	F_PIXELATED 1
-
 	//---- Color ----
 	Texture "source/white.png"
 }

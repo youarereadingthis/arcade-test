@@ -13,17 +13,17 @@ public partial class ArcadeDeadLines : ArcadeMachine
 	{
 		public override List<Vertex> Lines { get; set; } = new List<Vertex>()
 		{
-			new( new(-1f, -1f) ),
-			new( new(1f, -1f) ),
+			new( new(-0.5f, -0.5f) ),
+			new( new(0.5f, -0.5f) ),
 
-			new( new(1f, -1f) ),
-			new( new(1f, 1f) ),
+			new( new(0.5f, -0.5f) ),
+			new( new(0.5f, 0.5f) ),
             
-			new( new(1f, 1f) ),
-			new( new(-1f, 1f) ),
+			new( new(0.5f, 0.5f) ),
+			new( new(-0.5f, 0.5f) ),
 
-			new( new(-1f, 1f) ),
-			new( new(-1f, -1f) ),
+			new( new(-0.5f, 0.5f) ),
+			new( new(-0.5f, -0.5f) ),
 		};
 	}
 }

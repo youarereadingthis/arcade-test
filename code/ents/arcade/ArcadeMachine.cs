@@ -138,7 +138,7 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 	}
 
 	/// <summary>
-	/// Kill all users off of the machine.
+	/// Kick all users off of the machine.
 	/// </summary>
 	public void Exit()
 	{

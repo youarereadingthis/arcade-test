@@ -9,13 +9,16 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 	public Player Ply { get; set; }
 	public Crosshair Cursor { get; set; }
+	public ArenaLines Perimeter { get; set; }
+
+	public static float ArenaSize { get; set; } = 256f;
 
 
 	public override void ClientSpawn()
 	{
 		base.ClientSpawn();
 
-		Screen = new( SceneWorld, 256, 610, 480 )
+		Screen = new( SceneWorld, 180, 610, 480 )
 		{
 			FollowMainCamera = false,
 			RequireCabinet = true,
@@ -31,7 +34,8 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 		UpdateScreen();
 
-		// Spawn the player.
+		// Spawn objects.
+		Perimeter = new( SceneWorld );
 		Cursor = new( SceneWorld ) { Position = Vector3.Zero, };
 		Ply = new( SceneWorld, PhysicsWorld )
 		{
