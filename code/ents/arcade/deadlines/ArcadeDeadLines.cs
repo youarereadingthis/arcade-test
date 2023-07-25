@@ -23,12 +23,11 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		};
 
 		// Point the camera downward.
-		Cam.Position = Vector3.Up * 256f;
 		Cam.Rotation = Rotation.FromPitch( 90f );
 
 		Cam.Ortho = true;
-		Cam.OrthoWidth = 1024;
-		Cam.OrthoHeight = 1024;
+		Cam.OrthoWidth = 256;
+		Cam.OrthoHeight = 256;
 
 		UpdateScreen();
 
@@ -39,6 +38,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 			Position = Vector3.Zero,
 			Cursor = Cursor
 		};
+		Ply.Line = new( SceneWorld, Ply, Cursor );
 	}
 
 
@@ -69,7 +69,11 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 	public override void FrameSimulate( IClient cl )
 	{
-		Ply?.FrameSimulate( cl );
+		if ( Ply.IsValid() )
+		{
+			Ply.FrameSimulate( cl );
+			Cam.Position = Ply.Position + (Vector3.Up * 256f);
+		}
 
 		base.FrameSimulate( cl );
 	}

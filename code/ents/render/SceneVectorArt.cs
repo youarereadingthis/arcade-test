@@ -16,6 +16,9 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 		public SceneVectorArt( SceneWorld world ) : base( world )
 		{
+			// TODO: solve the camera bounds cutoff issue
+			// This at least makes it take longer to happen.
+			Bounds = new BBox( Vector3.Zero, 512f );
 		}
 
 

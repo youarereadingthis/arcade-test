@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using static Sandbox.Graphics;
 
 namespace Sandbox;
@@ -10,16 +11,17 @@ public partial class ArcadeDeadLines : ArcadeMachine
 	{
 		public override Shape Shape { get; set; }
 		public Crosshair Cursor { get; set; }
+		public AimLine Line { get; set; }
 		public PhysicsBody PhysBody { get; set; }
 
-		public float MoveSpeed { get; set; } = 500f;
+		public float MoveSpeed { get; set; } = 100f;
 
 
 
 		public Player( SceneWorld world, PhysicsWorld physWorld ) : base( world )
 		{
 			Shape = new Triangle();
-			Transform = Transform.WithScale( 30f );
+			Transform = Transform.WithScale( 7.5f );
 			PhysBody = new( physWorld );
 
 			ColorTint = Color.White;
@@ -43,16 +45,15 @@ public partial class ArcadeDeadLines : ArcadeMachine
 			}
 
 			// DEBUG: Rotation
-			if ( Input.Down( "use" ) )
+			/*if ( Input.Down( "use" ) )
 				Rotation = Rotation.RotateAroundAxis( Vector3.Up, -90f * Time.Delta );
 			else if ( Input.Down( "menu" ) )
-				Rotation = Rotation.RotateAroundAxis( Vector3.Up, 90f * Time.Delta );
+				Rotation = Rotation.RotateAroundAxis( Vector3.Up, 90f * Time.Delta );*/
 		}
 
 
 		public override void RenderSceneObject()
 		{
-			DebugOverlay.Line( Position, Cursor.Position, Color.White );
 			base.RenderSceneObject();
 		}
 	}

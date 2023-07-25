@@ -10,7 +10,6 @@ public partial class ArcadeDeadLines : ArcadeMachine
 	public class Crosshair : SceneVectorArt
 	{
 		public override Shape Shape { get; set; }
-		public float MoveSpeed { get; set; } = 100f;
 
 
 		public Crosshair( SceneWorld world ) : base( world )
@@ -18,7 +17,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 			Shape = new Square();
 
 			ColorTint = Color.White;
-			Transform = Transform.WithScale( 10f );
+			Transform = Transform.WithScale( 2.5f );
 		}
 	}
 }

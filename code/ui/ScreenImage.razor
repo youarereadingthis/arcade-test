@@ -42,6 +42,7 @@
             return;
 
         Image.Texture = Screen.GetRenderTexture();
+        @* Screen.Cam.Size = new Vector2(Width, Height); *@
         Graphics.RenderToTexture(Screen.Cam, Image.Texture);
 
         @* Log.Info("ScreenImage.Frame()"); *@
@@ -150,8 +151,11 @@
         scrPos = default;
         onScreen = false;
 
+        if (!Screen.IsValid() || Screen.Cam == null)
+            return false;
+
         var plane = new Plane(Position, Rotation.Forward);
-        var pos = plane.Trace(ray, false, MaxInteractionDistance);
+        var pos = plane.Trace(ray, true, MaxInteractionDistance);
 
         if (!pos.HasValue)
             return false;
@@ -164,8 +168,8 @@
         var localPos3 = Transform.PointToLocal(pos.Value);
 
         var worldPos = new Vector3(localPos3.z, -localPos3.y, 0f);
-        worldPos *= (1.0f / ScenePanelObject.ScreenToWorldScale / WorldScale / 0.5f);
-        hitPos = worldPos;
+        worldPos *= (1.0f / ScenePanelObject.ScreenToWorldScale / WorldScale / (512 / Screen.Cam.OrthoWidth));
+        hitPos = worldPos + Screen.Cam.Position.WithZ(0);
 
         scrPos = new Vector2(localPos3.y, -localPos3.z);
         scrPos *= (1.0f / ScenePanelObject.ScreenToWorldScale / WorldScale);
