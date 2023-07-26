@@ -14,7 +14,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 		public Crosshair( SceneWorld world ) : base( world )
 		{
-			Shape = new Square();
+			Shape = new ShapeSquare();
 
 			ColorTint = Color.White;
 			Transform = Transform.WithScale( 2.5f );

@@ -9,7 +9,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 	/// <summary>
 	/// A 3-lined triangular shape.
 	/// </summary>
-	public class Square : Shape
+	public class ShapeSquare : Shape
 	{
 		public override List<Vertex> Lines { get; set; } = new List<Vertex>()
 		{

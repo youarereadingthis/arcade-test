@@ -43,6 +43,12 @@ public partial class ArcadeDeadLines : ArcadeMachine
 			Cursor = Cursor
 		};
 		Ply.Line = new( SceneWorld, Ply, Cursor );
+
+		var e = new Square( SceneWorld )
+		{
+			Ply = Ply,
+			Position = Vector3.Right * 30f,
+		};
 	}
 
 

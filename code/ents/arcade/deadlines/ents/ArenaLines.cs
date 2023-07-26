@@ -14,7 +14,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 		public ArenaLines( SceneWorld world ) : base( world )
 		{
-			Shape = new Square();
+			Shape = new ShapeSquare();
 
 			ColorTint = Color.Gray;
 			Transform = Transform.WithScale( ArenaSize * 2f )

@@ -11,11 +11,14 @@ public partial class ArcadeDeadLines : ArcadeMachine
 	/// </summary>
 	public class SceneVectorArt : SceneCustomObject
 	{
+		public SceneWorld SceneWorld { get; set; }
 		public virtual Shape Shape { get; set; }
 
 
 		public SceneVectorArt( SceneWorld world ) : base( world )
 		{
+			SceneWorld = world;
+			
 			// TODO: solve the camera bounds cutoff issue
 			// This at least makes it take longer to happen.
 			Bounds = new BBox( Vector3.Zero, 1024f );

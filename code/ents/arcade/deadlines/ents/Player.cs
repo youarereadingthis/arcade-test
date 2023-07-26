@@ -20,8 +20,8 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 		public Player( SceneWorld world, PhysicsWorld physWorld ) : base( world )
 		{
-			Shape = new Triangle();
-			Transform = Transform.WithScale( 7.0f );
+			Shape = new ShapeTriangle();
+			Transform = Transform.WithScale( 5.0f );
 			PhysBody = new( physWorld );
 
 			ColorTint = Color.White;
@@ -31,6 +31,28 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		public override void Simulate( IClient cl )
 		{
 			base.Simulate( cl );
+
+			if ( Input.Pressed( "use" ) )
+			{
+				var dir = (Cursor.Position - Position).Normal;
+				var ray = new Ray( Position, dir );
+				foreach ( var o in SceneWorld.SceneObjects )
+				{
+					if ( o is Enemy e )
+					{
+						if ( e.TestRay( ray, 1024f ) )
+						{
+							e.Knockback( dir * 100f );
+							Log.Info( "hit enemy " + e );
+						}
+						else
+						{
+							// Log.Info( "failed to hit enemy " + e );
+						}
+					}
+					// Log.Info( o );
+				}
+			}
 		}
 
 		public override void FrameSimulate( IClient cl )

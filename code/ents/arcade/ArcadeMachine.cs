@@ -161,7 +161,7 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 	public void ClientEnter( IClient cl )
 	{
 		if ( !cl.IsValid() || cl != Game.LocalClient ) return;
-		Screen?.Img?.Focus();
+		// Screen?.Img?.Focus();
 		if ( Screen.IsValid() && Screen.Img.IsValid() )
 		{
 			Log.Info( "Focusing screen " + Screen );
