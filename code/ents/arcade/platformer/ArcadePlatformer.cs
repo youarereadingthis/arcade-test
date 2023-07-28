@@ -3,22 +3,18 @@ using Sandbox.UI;
 namespace Sandbox;
 
 
-public partial class ArcadeDeadLines : ArcadeMachine
+public partial class ArcadePlatformer : ArcadeMachine
 {
 	public SceneCamera Cam => Screen.Cam;
 
 	public Player Ply { get; set; }
-	public Crosshair Cursor { get; set; }
-	public ArenaLines Perimeter { get; set; }
-
-	public static float ArenaSize { get; set; } = 200f;
 
 
 	public override void ClientSpawn()
 	{
 		base.ClientSpawn();
 
-		Screen = new( SceneWorld, 180, 610, 480 )
+		Screen = new( SceneWorld, 256, 610, 480 )
 		{
 			FollowMainCamera = false,
 			RequireCabinet = true,
@@ -35,19 +31,9 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		UpdateScreen();
 
 		// Spawn objects.
-		Perimeter = new( SceneWorld );
-		Cursor = new( SceneWorld ) { Position = Vector3.Zero, };
 		Ply = new( SceneWorld, PhysicsWorld )
 		{
 			Position = Vector3.Zero,
-			Cursor = Cursor
-		};
-		Ply.Line = new( SceneWorld, Ply, Cursor );
-
-		var e = new Square( SceneWorld )
-		{
-			Ply = Ply,
-			Position = Vector3.Right * 30f,
 		};
 	}
 
@@ -61,9 +47,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 		if ( Screen.Img.RayToLocal( p.ScreenRay(), out var wPos, out var scrPos, out var onScreen ) )
 		{
-			Cursor.Position = wPos.WithZ( 0f );
-			Ply.Rotation = Rotation.LookAt( (wPos - Ply.Position).Normal, Vector3.Up )
-				.RotateAroundAxis( Vector3.Up, 90f );
+			// Ply.Rotation = Rotation.LookAt( (wPos - Ply.Position).Normal, Vector3.Up );
 
 			SetCursor( onScreen );
 		}
@@ -73,7 +57,6 @@ public partial class ArcadeDeadLines : ArcadeMachine
 	{
 		if ( btn == "mouseleft" )
 		{
-			Ply?.Attack();
 		}
 	}
 
@@ -85,10 +68,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 		foreach ( var o in SceneWorld.SceneObjects )
 		{
-			if ( o is Enemy e )
-			{
-				e.Tick();
-			}
+
 		}
 	}
 
@@ -104,7 +84,9 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		if ( Ply.IsValid() )
 		{
 			Ply.FrameSimulate( cl );
-			Cam.Position = Ply.Position + (Vector3.Up * 256f);
+			Cam.Position = Ply.Position
+				- new Vector3( -Ply.Height, Ply.Width, 0f )
+				+ (Vector3.Up * 256f);
 		}
 
 		base.FrameSimulate( cl );

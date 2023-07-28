@@ -2,8 +2,8 @@ Hud {
     font-size: 25px;
     color: white;
 
-    pointer-events: none;
-    cursor: none;
+    // pointer-events: none;
+    // cursor: none;
 
     &.pointer-visible {
         pointer-events: all;

@@ -17,9 +17,6 @@ public partial class Pawn : AnimatedEntity
 	[ClientInput] public Angles ViewAngles { get; set; }
 
 
-	/// <summary>
-	/// Called when the entity is first created 
-	/// </summary>
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -30,6 +27,7 @@ public partial class Pawn : AnimatedEntity
 		EnableHideInFirstPerson = true;
 		EnableShadowInFirstPerson = true;
 	}
+
 
 	public override void BuildInput()
 	{
@@ -51,7 +49,6 @@ public partial class Pawn : AnimatedEntity
 			var scrPos = Machine.Screen.Position;
 			var lookAt = Rotation.LookAt( (scrPos - AimRay.Position).Normal );
 			ViewAngles = Rotation.Slerp( ViewAngles.ToRotation(), lookAt, Time.Delta * 2f, true ).Angles();
-
 		}
 
 		// Pass inputs to the arcade machine for player controls.
@@ -85,9 +82,9 @@ public partial class Pawn : AnimatedEntity
 					u.OnUse( this );
 		}
 
+		// View & Movement
 		Rotation = ViewAngles.ToRotation();
 
-		// build movement from the input values
 		var movement = InputDirection.Normal;
 		var moveSpeed = Input.Down( "run" ) ? 500 : 200;
 
@@ -121,6 +118,8 @@ public partial class Pawn : AnimatedEntity
 				a = new ArcadeMelon() { Position = pos }.Reorient( Rotation );
 			else if ( Input.Pressed( "slot2" ) )
 				a = new ArcadeDeadLines() { Position = pos }.Reorient( Rotation );
+			else if ( Input.Pressed( "slot3" ) )
+				a = new ArcadePlatformer() { Position = pos }.Reorient( Rotation );
 
 			if ( a.IsValid() )
 				Log.Info( "Spawned a " + a.GetType().Name );

@@ -7,13 +7,14 @@ using static Sandbox.Graphics;
 namespace Sandbox;
 
 
-public partial class ArcadeDeadLines : ArcadeMachine
+public partial class ArcadeMachine : AnimatedEntity
 {
 	/// <summary>
 	/// A shape made of lines.
 	/// </summary>
 	public class Shape
 	{
+		public virtual PrimitiveType DrawType { get; set; } = PrimitiveType.Lines;
 		public virtual List<Vertex> Lines { get; set; } = new List<Vertex>()
 		{
 			new( new(-1f, -1f) ),
@@ -50,7 +51,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		/// </summary>
 		public void Draw()
 		{
-			Graphics.Draw( Lines, VertCount, Material, RA, PrimitiveType.Lines );
+			Graphics.Draw( Lines, VertCount, Material, RA, DrawType );
 			// Graphics.Draw( LineArt, VertCount, Material, RA, PrimitiveType.LinesWithAdjacency );
 		}
 

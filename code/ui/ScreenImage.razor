@@ -32,6 +32,8 @@
 
         // Don't render this panel using the panel system
         RenderedManually = true;
+        AcceptsFocus = true;
+        ButtonInput = PanelInputType.Game;
     }
 
 
@@ -42,10 +44,17 @@
             return;
 
         Image.Texture = Screen.GetRenderTexture();
-        @* Screen.Cam.Size = new Vector2(Width, Height); *@
         Graphics.RenderToTexture(Screen.Cam, Image.Texture);
 
         @* Log.Info("ScreenImage.Frame()"); *@
+    }
+
+    public override void OnButtonEvent(ButtonEvent e)
+    {
+        Log.Info(e.Button);
+
+        if (e.Pressed && e.Button == "tab")
+            this.Blur();
     }
 
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Sandbox.UI;
 using static Sandbox.Graphics;
 
 namespace Sandbox;
@@ -9,7 +10,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 {
 	public class Square : Enemy
 	{
-		public float Speed { get; set; } = 150.0f;
+		public float Speed { get; set; } = 200.0f;
 		public override float Drag { get; set; } = 0.5f;
 
 		public override Color Color { get; set; } = Color.Cyan;
@@ -33,7 +34,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 				Velocity += dir * Speed * Time.Delta;
 				// Log.Info("ply valid");
 			}
-			Transform = Transform.RotateAround( Position, Rotation.FromYaw( Velocity.Length * 2f * Time.Delta ) );
+			Transform = Transform.RotateAround( Position, Rotation.FromYaw( Velocity.Length * 4f * Time.Delta ) );
 			base.Tick();
 		}
 
@@ -46,7 +47,6 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 		public override void RenderSceneObject()
 		{
-			Tick();
 			base.RenderSceneObject();
 		}
 	}

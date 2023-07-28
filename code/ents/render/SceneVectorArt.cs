@@ -4,7 +4,7 @@ using static Sandbox.Graphics;
 namespace Sandbox;
 
 
-public partial class ArcadeDeadLines : ArcadeMachine
+public partial class ArcadeMachine : AnimatedEntity
 {
 	/// <summary>
 	/// A player object.
@@ -18,7 +18,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		public SceneVectorArt( SceneWorld world ) : base( world )
 		{
 			SceneWorld = world;
-			
+
 			// TODO: solve the camera bounds cutoff issue
 			// This at least makes it take longer to happen.
 			Bounds = new BBox( Vector3.Zero, 1024f );

@@ -44,7 +44,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		{
 			Velocity += vel;
 
-			FlashEnd = 0.2f;
+			FlashEnd = 0.1f;
 			ColorTint = Color.White;
 		}
 

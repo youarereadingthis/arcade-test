@@ -17,6 +17,8 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 	[Net]
 	public Pawn Pawn { get; set; } = null;
 
+	public bool Paused { get; set; } = false;
+
 
 	public override void Spawn()
 	{
@@ -38,9 +40,9 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 		};
 	}
 
-	public virtual void SetCursor(bool onScreen)
+	public virtual void SetCursor( bool onScreen )
 	{
-		if (Game.RootPanel is not Hud hud) return;
+		if ( Game.RootPanel is not Hud hud ) return;
 
 		hud.Style.Cursor = onScreen ? "none" : "default";
 	}
@@ -53,6 +55,11 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 
 	public override void BuildInput()
 	{
+	}
+
+	public virtual void PressedUI( string btn )
+	{
+		// Log.Info( "PressedUI: " + btn );
 	}
 
 	public override void Simulate( IClient cl )
@@ -161,9 +168,9 @@ public partial class ArcadeMachine : AnimatedEntity, IUse
 	public void ClientEnter( IClient cl )
 	{
 		if ( !cl.IsValid() || cl != Game.LocalClient ) return;
-		// Screen?.Img?.Focus();
 		if ( Screen.IsValid() && Screen.Img.IsValid() )
 		{
+			Screen.Img.Focus();
 			Log.Info( "Focusing screen " + Screen );
 		}
 	}

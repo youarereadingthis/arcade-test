@@ -4,7 +4,7 @@ using static Sandbox.Graphics;
 namespace Sandbox;
 
 
-public partial class ArcadeDeadLines : ArcadeMachine
+public partial class ArcadeMachine : AnimatedEntity
 {
 	/// <summary>
 	/// A 3-lined triangular shape.

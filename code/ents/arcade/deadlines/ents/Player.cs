@@ -10,6 +10,7 @@ public partial class ArcadeDeadLines : ArcadeMachine
 	public class Player : SceneVectorArt, ISceneCollider
 	{
 		public override Shape Shape { get; set; }
+
 		public Crosshair Cursor { get; set; }
 		public AimLine Line { get; set; }
 		public PhysicsBody PhysBody { get; set; }
@@ -32,26 +33,9 @@ public partial class ArcadeDeadLines : ArcadeMachine
 		{
 			base.Simulate( cl );
 
-			if ( Input.Pressed( "use" ) )
+			if ( Input.Pressed( "attack1" ) )
 			{
-				var dir = (Cursor.Position - Position).Normal;
-				var ray = new Ray( Position, dir );
-				foreach ( var o in SceneWorld.SceneObjects )
-				{
-					if ( o is Enemy e )
-					{
-						if ( e.TestRay( ray, 1024f ) )
-						{
-							e.Knockback( dir * 100f );
-							Log.Info( "hit enemy " + e );
-						}
-						else
-						{
-							// Log.Info( "failed to hit enemy " + e );
-						}
-					}
-					// Log.Info( o );
-				}
+				Attack();
 			}
 		}
 
@@ -67,18 +51,32 @@ public partial class ArcadeDeadLines : ArcadeMachine
 
 				Position = Position.Clamp( -ArenaSize, ArenaSize );
 			}
-
-			// DEBUG: Rotation
-			/*if ( Input.Down( "use" ) )
-				Rotation = Rotation.RotateAroundAxis( Vector3.Up, -90f * Time.Delta );
-			else if ( Input.Down( "menu" ) )
-				Rotation = Rotation.RotateAroundAxis( Vector3.Up, 90f * Time.Delta );*/
 		}
 
 
 		public override void RenderSceneObject()
 		{
 			base.RenderSceneObject();
+		}
+
+
+		public void Attack()
+		{
+			var dir = (Cursor.Position - Position).Normal;
+			var ray = new Ray( Position, dir );
+
+			foreach ( var o in SceneWorld.SceneObjects )
+			{
+				if ( o is Enemy e )
+				{
+					if ( e.TestRay( ray, 1024f ) )
+					{
+						e.Knockback( dir * 100f );
+						// Log.Info( "hit enemy " + e );
+					}
+				}
+				// Log.Info( o );
+			}
 		}
 	}
 }
